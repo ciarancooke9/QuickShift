@@ -6,49 +6,47 @@ import {
   View,
   Button,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import PrimaryButton from "../components/ui/PrimaryButton";
 import {
-  signInAuthUserWithEmailAndPassword,
-  auth,
+  createAuthUserWithEmailAndPassword,
+  createUserDocumentFromAuth,
 } from "../utils/firebaseUtils";
-import { useNavigation } from "@react-navigation/native";
 
-const LoginScreen = () => {
+const defaultFormFields = {
+  displayName: "",
+  email: "",
+  password: "",
+  confirmPassword: "",
+};
+
+const SignupScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
-  const navigation = useNavigation();
-
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (user) {
-        navigation.replace("Home");
-      }
-    });
-    return unsubscribe;
-  }, []);
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   const handleSubmit = async (event) => {
     console.log("button hit");
     event.preventDefault();
 
+    if (password !== confirmPassword) {
+      console.log("passwords dont match");
+      return;
+    }
+
     try {
-      const { user } = await signInAuthUserWithEmailAndPassword(
+      const { user } = await createAuthUserWithEmailAndPassword(
         email,
         password
       );
+      await createUserDocumentFromAuth(user, { email });
       console.log(email);
+      navigation.replace("Home");
     } catch (error) {
-      switch (error.code) {
-        case "auth/wrongpassword":
-          alert("incorrect password for email");
-          break;
-        case "auth/user-not-found":
-          alert("No user with this email");
-          break;
-        default:
-          console.log(error);
+      if (error.code === "auth/email-already-in-use") {
+        alert("Cannot create user, email already in use");
+      } else {
+        console.log("user creation encountered an error", error);
       }
     }
   };
@@ -67,13 +65,19 @@ const LoginScreen = () => {
           onChangeText={setPassword}
           secureTextEntry
         ></TextInput>
+        <TextInput
+          placeholder="Confirm Password"
+          value={confirmPassword}
+          onChangeText={setConfirmPassword}
+          secureTextEntry
+        ></TextInput>
       </View>
-      <PrimaryButton onPress={handleSubmit}>Login</PrimaryButton>
+      <PrimaryButton onPress={handleSubmit}>Register</PrimaryButton>
     </KeyboardAvoidingView>
   );
 };
 
-export default LoginScreen;
+export default SignupScreen;
 
 const styles = StyleSheet.create({
   container: {
