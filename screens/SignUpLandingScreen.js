@@ -3,27 +3,31 @@ import React from "react";
 
 import PrimaryButton from "../components/ui/PrimaryButton";
 
-const LandingScreen = ({ navigation }) => {
+const SignUpLandingScreen = ({ navigation }) => {
   return (
     <View>
       <PrimaryButton
         onPress={() =>
-          navigation.navigate("SignUp", {
-            screen: "SignUpScreen",
+          navigation.navigate("EmployerSignUp", {
+            screen: "EmployeeSignUpScreen",
           })
         }
       >
-        SignUp
+        Employer Sign-up
       </PrimaryButton>
       <PrimaryButton
-        onPress={() => navigation.navigate("Login", { screen: "LoginScreen" })}
+        onPress={() =>
+          navigation.navigate("EmployeeSignUp", {
+            screen: "EmployeeSignUpScreen",
+          })
+        }
       >
-        Login
+        Worker Sign-up
       </PrimaryButton>
     </View>
   );
 };
 
-export default LandingScreen;
+export default SignUpLandingScreen;
 
 const styles = StyleSheet.create({});

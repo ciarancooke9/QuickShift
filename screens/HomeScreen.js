@@ -17,7 +17,7 @@ const HomeScreen = () => {
   };
   return (
     <View>
-      <Text>Email:{auth.currentUser?.email}</Text>
+      <Text style={styles.header}>Email:{auth.currentUser.email}</Text>
       <PrimaryButton onPress={handleSubmit}>Sign Out</PrimaryButton>
     </View>
   );
@@ -25,4 +25,8 @@ const HomeScreen = () => {
 
 export default HomeScreen;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  header: {
+    fontSize: 30,
+  },
+});

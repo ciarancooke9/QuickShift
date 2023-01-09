@@ -2,10 +2,9 @@ import {
   KeyboardAvoidingView,
   StyleSheet,
   TextInput,
-  Text,
   View,
 } from "react-native";
-import CheckBox from "expo-checkbox";
+import { auth } from "../utils/firebaseUtils";
 import React, { useState } from "react";
 import PrimaryButton from "../components/ui/PrimaryButton";
 import {
@@ -13,12 +12,11 @@ import {
   createUserDocumentFromAuth,
 } from "../utils/firebaseUtils";
 
-const SignupScreen = ({ navigation }) => {
-  const [displayName, setDisplayName] = useState("");
+const EmployeeSignupScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [isEmployer, setIsEmployer] = useState(false);
+  const [skill, setSkill] = useState("");
 
   const handleSubmit = async (event) => {
     console.log("button hit");
@@ -34,17 +32,11 @@ const SignupScreen = ({ navigation }) => {
         email,
         password,
         isEmployer,
-        displayName
+        business
       );
-      await createUserDocumentFromAuth(user, {
-        email,
-        isEmployer,
-        displayName,
-      });
+      await createUserDocumentFromAuth(user, { email, isEmployer, business });
       console.log(email);
-      isEmployer
-        ? navigation.replace("EmployerSignUp")
-        : navigation.replace("EmployeeSignUp");
+      navigation.replace("Home");
     } catch (error) {
       if (error.code === "auth/email-already-in-use") {
         alert("Cannot create user, email already in use");
@@ -63,16 +55,10 @@ const SignupScreen = ({ navigation }) => {
           onChangeText={setEmail}
         ></TextInput>
         <TextInput
-          placeholder="Display Name"
-          value={displayName}
-          onChangeText={setDisplayName}
+          placeholder="Skill"
+          value={skill}
+          onChangeText={setSkill}
         ></TextInput>
-        <Text>Tick box if you are an employer, if worker leave unticked</Text>
-        <CheckBox
-          value={isEmployer}
-          onValueChange={setIsEmployer}
-          style={styles.checkbox}
-        />
         <TextInput
           placeholder="Password"
           value={password}
@@ -91,7 +77,7 @@ const SignupScreen = ({ navigation }) => {
   );
 };
 
-export default SignupScreen;
+export default EmployeeSignupScreen;
 
 const styles = StyleSheet.create({
   container: {
