@@ -27,7 +27,7 @@ const EmployeeSignupScreen = ({ navigation }) => {
       addDoc(userDb, {
         location: employee.location,
         description: employee.description,
-        experience: employee.experience,
+        experience: [],
         fullName: employee.fullName,
         email: auth.currentUser.email,
         trustFactor: 100,
@@ -57,13 +57,13 @@ const EmployeeSignupScreen = ({ navigation }) => {
             setEmployee({ ...employee, description: text })
           }
         ></TextInput>
-        <TextInput
+        {/* <TextInput
           placeholder="experience"
           value={employee.experience}
           onChangeText={(text) =>
             setEmployee({ ...employee, experience: text })
           }
-        ></TextInput>
+        ></TextInput> */}
         <TextInput
           placeholder="Location"
           value={employee.location}
