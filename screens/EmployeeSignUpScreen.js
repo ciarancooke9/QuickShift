@@ -3,39 +3,35 @@ import {
   StyleSheet,
   TextInput,
   View,
+  Text,
 } from "react-native";
-import { auth } from "../utils/firebaseUtils";
+import { auth, db } from "../utils/firebaseUtils";
+import { collection, addDoc } from "firebase/firestore";
 import React, { useState } from "react";
 import PrimaryButton from "../components/ui/PrimaryButton";
-import {
-  createAuthUserWithEmailAndPassword,
-  createUserDocumentFromAuth,
-} from "../utils/firebaseUtils";
 
 const EmployeeSignupScreen = ({ navigation }) => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [skill, setSkill] = useState("");
+  const [employee, setEmployee] = useState({
+    fullName: "",
+    location: "",
+    description: "",
+    experience: [],
+  });
 
   const handleSubmit = async (event) => {
     console.log("button hit");
     event.preventDefault();
 
-    if (password !== confirmPassword) {
-      console.log("passwords dont match");
-      return;
-    }
-
     try {
-      const { user } = await createAuthUserWithEmailAndPassword(
-        email,
-        password,
-        isEmployer,
-        business
-      );
-      await createUserDocumentFromAuth(user, { email, isEmployer, business });
-      console.log(email);
+      const userDb = collection(db, "Employees");
+      addDoc(userDb, {
+        location: employee.location,
+        description: employee.description,
+        experience: employee.experience,
+        fullName: employee.fullName,
+        email: auth.currentUser.email,
+        trustFactor: 100,
+      });
       navigation.replace("Home");
     } catch (error) {
       if (error.code === "auth/email-already-in-use") {
@@ -50,28 +46,31 @@ const EmployeeSignupScreen = ({ navigation }) => {
     <KeyboardAvoidingView style={styles.container}>
       <View>
         <TextInput
-          placeholder="Email"
-          value={email}
-          onChangeText={setEmail}
+          placeholder="Name"
+          value={employee.fullName}
+          onChangeText={(text) => setEmployee({ ...employee, fullName: text })}
         ></TextInput>
         <TextInput
-          placeholder="Skill"
-          value={skill}
-          onChangeText={setSkill}
+          placeholder="Description"
+          value={employee.description}
+          onChangeText={(text) =>
+            setEmployee({ ...employee, description: text })
+          }
         ></TextInput>
         <TextInput
-          placeholder="Password"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
+          placeholder="experience"
+          value={employee.experience}
+          onChangeText={(text) =>
+            setEmployee({ ...employee, experience: text })
+          }
         ></TextInput>
         <TextInput
-          placeholder="Confirm Password"
-          value={confirmPassword}
-          onChangeText={setConfirmPassword}
-          secureTextEntry
+          placeholder="Location"
+          value={employee.location}
+          onChangeText={(text) => setEmployee({ ...employee, location: text })}
         ></TextInput>
       </View>
+      <Text>{auth.currentUser.email}</Text>
       <PrimaryButton onPress={handleSubmit}>Register</PrimaryButton>
     </KeyboardAvoidingView>
   );
