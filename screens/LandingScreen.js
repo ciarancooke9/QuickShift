@@ -1,9 +1,15 @@
 import { StyleSheet, View } from "react-native";
 import React from "react";
 
+import { auth } from "../utils/firebaseUtils";
 import PrimaryButton from "../components/ui/PrimaryButton";
 
 const LandingScreen = ({ navigation }) => {
+  console.log(auth.currentUser);
+  if (auth.currentUser) {
+    navigation.replace("Home", { screen: "HomeScreen" });
+  }
+
   return (
     <View>
       <PrimaryButton

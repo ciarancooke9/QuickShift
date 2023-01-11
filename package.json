@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@react-native-community/checkbox": "^0.5.14",
+    "@react-native-community/datetimepicker": "^6.7.1",
     "@react-native-community/masked-view": "^0.1.11",
     "@react-native-firebase/app": "^16.5.0",
     "@react-native-google-signin/google-signin": "^9.0.2",

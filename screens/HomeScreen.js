@@ -2,21 +2,35 @@ import { StyleSheet, Text, View, FlatList } from "react-native";
 import React, { useState, useEffect } from "react";
 import PrimaryButton from "../components/ui/PrimaryButton";
 import { auth, db } from "../utils/firebaseUtils";
-import { collection, doc, onSnapshot } from "firebase/firestore";
+
+import {
+  collection,
+  doc,
+  onSnapshot,
+  getDocs,
+  query,
+  where,
+} from "firebase/firestore";
 
 const HomeScreen = ({ navigation }) => {
-  const [people, setPeople] = useState([]);
+  const [user, setUser] = useState({});
   //const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     //setLoading(true);
-    const userQuery = collection(db, "users");
+    const userQuery = query(
+      collection(db, "users"),
+      where("email", "==", auth.currentUser.email)
+    );
     onSnapshot(userQuery, (snapshot) => {
       let usersList = [];
       snapshot.docs.map((doc) => usersList.push({ ...doc.data(), id: doc.id }));
-      setPeople(usersList);
+      setUser(usersList[0]);
       //setLoading(false);
     });
+    user.isEmployer //redirect based on user type
+      ? navigation.replace("EmployeeHome", { user: user })
+      : navigation.replace("EmployerHome", { user: user });
   }, []);
 
   const renderItem = ({ item }) => {
@@ -37,15 +51,11 @@ const HomeScreen = ({ navigation }) => {
     }
   };
 
-  console.log(people);
   return (
     <View>
       <Text style={styles.header}>Email:{auth.currentUser.email}</Text>
-      <FlatList
-        data={people}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-      />
+      <Text style={styles.header}>Email:{user.email}</Text>
+
       <PrimaryButton onPress={handleSubmit}>Sign Out</PrimaryButton>
     </View>
   );
