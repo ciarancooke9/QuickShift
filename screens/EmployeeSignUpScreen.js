@@ -9,14 +9,23 @@ import { auth, db } from "../utils/firebaseUtils";
 import { collection, addDoc } from "firebase/firestore";
 import React, { useState } from "react";
 import PrimaryButton from "../components/ui/PrimaryButton";
+import { MultipleSelectList } from "react-native-dropdown-select-list";
 
 const EmployeeSignupScreen = ({ navigation }) => {
   const [employee, setEmployee] = useState({
     fullName: "",
     location: "",
     description: "",
-    experience: [],
   });
+  const [selected, setSelected] = useState([]);
+
+  const skills = [
+    "Barwork",
+    "Table Waiting",
+    "Mixology",
+    "Security",
+    "Kitchen Work",
+  ];
 
   const handleSubmit = async (event) => {
     console.log("button hit");
@@ -27,7 +36,7 @@ const EmployeeSignupScreen = ({ navigation }) => {
       addDoc(userDb, {
         location: employee.location,
         description: employee.description,
-        experience: [],
+        experience: selected,
         fullName: employee.fullName,
         email: auth.currentUser.email,
         trustFactor: 100,
@@ -57,13 +66,13 @@ const EmployeeSignupScreen = ({ navigation }) => {
             setEmployee({ ...employee, description: text })
           }
         ></TextInput>
-        {/* <TextInput
-          placeholder="experience"
-          value={employee.experience}
-          onChangeText={(text) =>
-            setEmployee({ ...employee, experience: text })
-          }
-        ></TextInput> */}
+        <MultipleSelectList
+          setSelected={(val) => setSelected(val)}
+          data={skills}
+          save="value"
+          onSelect={() => console.log(selected)}
+          label="Categories"
+        />
         <TextInput
           placeholder="Location"
           value={employee.location}
