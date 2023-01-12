@@ -14,10 +14,10 @@ import {
 
 const HomeScreen = ({ navigation }) => {
   const [user, setUser] = useState({});
-  //const [loading, setLoading] = useState(false);
-
+  const [loading, setLoading] = useState(false);
+  console.log(loading);
   useEffect(() => {
-    //setLoading(true);
+    setLoading(true);
     const userQuery = query(
       collection(db, "users"),
       where("email", "==", auth.currentUser.email)
@@ -26,13 +26,25 @@ const HomeScreen = ({ navigation }) => {
       let usersList = [];
       snapshot.docs.map((doc) => usersList.push({ ...doc.data(), id: doc.id }));
       setUser(usersList[0]);
-      //setLoading(false);
+      setLoading(false);
+      console.log("snapshot", user);
     });
-    user.isEmployer //redirect based on user type
-      ? navigation.replace("EmployeeHome", { user: user })
-      : navigation.replace("EmployerHome", { user: user });
-  }, []);
 
+    /* user.isEmployer //redirect based on user type
+      ? navigation.replace("EmployeeHome", { user: user })
+      : navigation.replace("EmployerHome", { user: user }); */
+  }, [user]);
+
+  function isEmpty(obj) {
+    for (var prop in obj) {
+      if (obj.hasOwnProperty(prop)) return true;
+    }
+    return false;
+  }
+  let emptyUser = isEmpty(user);
+
+  if (emptyUser == true) {
+  }
   const renderItem = ({ item }) => {
     return (
       <View>
@@ -54,7 +66,6 @@ const HomeScreen = ({ navigation }) => {
   return (
     <View>
       <Text style={styles.header}>Email:{auth.currentUser.email}</Text>
-      <Text style={styles.header}>Email:{user.email}</Text>
 
       <PrimaryButton onPress={handleSubmit}>Sign Out</PrimaryButton>
     </View>
