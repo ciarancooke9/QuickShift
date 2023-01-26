@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, FlatList } from "react-native";
+import { StyleSheet, Text, View, ScrollView } from "react-native";
 import React, { useState, useEffect } from "react";
 import PrimaryButton from "../components/ui/PrimaryButton";
 import { auth, db } from "../utils/firebaseUtils";
@@ -7,44 +7,29 @@ import {
   collection,
   doc,
   onSnapshot,
-  getDocs,
+  getDoc,
   query,
   where,
 } from "firebase/firestore";
+import { async } from "@firebase/util";
 
 const HomeScreen = ({ navigation }) => {
   const [user, setUser] = useState({});
   const [loading, setLoading] = useState(false);
-  console.log(loading);
-  useEffect(() => {
-    setLoading(true);
-    const userQuery = query(
-      collection(db, "users"),
-      where("email", "==", auth.currentUser.email)
-    );
-    onSnapshot(userQuery, (snapshot) => {
-      let usersList = [];
-      snapshot.docs.map((doc) => usersList.push({ ...doc.data(), id: doc.id }));
-      setUser(usersList[0]);
-      setLoading(false);
-      console.log("snapshot", user);
-    });
 
+  const dBCall = async () => {
+    const docRef = doc(db, "users", auth.currentUser.uid);
+    const docSnap = await getDoc(docRef);
+    console.log(docSnap.data());
+  };
+
+  useEffect(() => {
+    dBCall();
     /* user.isEmployer //redirect based on user type
       ? navigation.replace("EmployeeHome", { user: user })
       : navigation.replace("EmployerHome", { user: user }); */
-  }, [user]);
+  }, []);
 
-  function isEmpty(obj) {
-    for (var prop in obj) {
-      if (obj.hasOwnProperty(prop)) return true;
-    }
-    return false;
-  }
-  let emptyUser = isEmpty(user);
-
-  if (emptyUser == true) {
-  }
   const renderItem = ({ item }) => {
     return (
       <View>
@@ -65,9 +50,12 @@ const HomeScreen = ({ navigation }) => {
 
   return (
     <View>
-      <Text style={styles.header}>Email:{auth.currentUser.email}</Text>
-
-      <PrimaryButton onPress={handleSubmit}>Sign Out</PrimaryButton>
+      <ScrollView>
+        <Text style={styles.header}>
+          Email:{JSON.stringify(auth.currentUser.uid)}
+        </Text>
+        <PrimaryButton onPress={handleSubmit}>Sign Out</PrimaryButton>
+      </ScrollView>
     </View>
   );
 };
