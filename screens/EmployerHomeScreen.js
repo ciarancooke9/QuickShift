@@ -13,7 +13,7 @@ const EmployerHomeScreen = ({ route, navigation }) => {
       alert(error.message);
     }
   };
-  console.log(route.params);
+  console.log(route);
   console.log(auth.currentUser.email);
   const { user } = route.params;
   return (

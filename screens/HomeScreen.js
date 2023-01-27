@@ -21,6 +21,7 @@ const HomeScreen = ({ navigation }) => {
     const docRef = doc(db, "users", auth.currentUser.uid);
     const docSnap = await getDoc(docRef);
     console.log(docSnap.data());
+    setUser(docSnap.data());
   };
 
   useEffect(() => {
@@ -41,8 +42,12 @@ const HomeScreen = ({ navigation }) => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      auth.signOut();
-      navigation.replace("Login");
+      console.log(user.isEmployer);
+      if (user.isEmployer) {
+        navigation.replace("EmployerHome");
+      } else {
+        navigation.replace("EmployeeHome");
+      }
     } catch (error) {
       alert(error.message);
     }
@@ -54,7 +59,8 @@ const HomeScreen = ({ navigation }) => {
         <Text style={styles.header}>
           Email:{JSON.stringify(auth.currentUser.uid)}
         </Text>
-        <PrimaryButton onPress={handleSubmit}>Sign Out</PrimaryButton>
+        <Text style={styles.header}>Email:{user.displayName}</Text>
+        <PrimaryButton onPress={handleSubmit}>Homepage</PrimaryButton>
       </ScrollView>
     </View>
   );
