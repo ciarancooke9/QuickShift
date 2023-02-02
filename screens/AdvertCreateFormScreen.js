@@ -8,14 +8,7 @@ import {
 import React, { useState, useEffect } from "react";
 import { SelectList } from "react-native-dropdown-select-list";
 import { auth, db } from "../utils/firebaseUtils";
-import {
-  collection,
-  addDoc,
-  doc,
-  getDocs,
-  query,
-  where,
-} from "firebase/firestore";
+import { collection, addDoc } from "firebase/firestore";
 import PrimaryButton from "../components/ui/PrimaryButton";
 import {
   DateTimePickerAndroid,
@@ -23,40 +16,13 @@ import {
 } from "@react-native-community/datetimepicker";
 
 const AdvertCreateFormScreen = ({ route, navigation }) => {
-  const [employerDetails, setEmployerDetails] = useState({});
-  const [loading, setLoading] = useState(false);
-
-  const user = route.params.userDetails;
-
-  const dBCall = async () => {
-    setLoading(true);
-    const q = query(
-      collection(db, "Employers"),
-      where("email", "==", auth.currentUser.email)
-    );
-
-    const querySnapshot = await getDocs(q);
-    querySnapshot.forEach((doc) => {
-      // doc.data() is never undefined for query doc snapshots
-      /* console.log(doc.id, " => ", doc.data());
-      console.log(auth.currentUser.uid); */
-      setEmployerDetails(doc.data());
-    });
-    /* const docRef = doc(db, "Employers");
-    const docSnap = await getDocs(docRef);
-    console.log("advertFormDocSnap", docSnap.data());
-    setEmployerDetails(docSnap.data()); */
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    dBCall();
-  }, []);
-
   const [date, setDate] = useState(new Date());
   const [mode, setMode] = useState("date");
   const [show, setShow] = useState(false);
   const [selected, setSelected] = useState("");
+
+  const employerDetails = route.params.employer;
+  console.log("advert", route.params.employer);
 
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate;
@@ -110,13 +76,13 @@ const AdvertCreateFormScreen = ({ route, navigation }) => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     const timeDate = dateExtractor(date);
-    console.log(employerDetails.location);
+    /* console.log(employerDetails.location);
     console.log(employerDetails.address);
     console.log(employerDetails.businessName);
     console.log(selected);
     console.log(advert.hours);
     console.log(timeDate[0], timeDate[1]);
-    console.log(advert.pay);
+    console.log(advert.pay); */
     try {
       const advertsDb = collection(db, "adverts");
       addDoc(advertsDb, {
