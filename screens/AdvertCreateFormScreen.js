@@ -5,10 +5,17 @@ import {
   KeyboardAvoidingView,
   TextInput,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { SelectList } from "react-native-dropdown-select-list";
 import { auth, db } from "../utils/firebaseUtils";
-import { collection, addDoc } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  doc,
+  getDoc,
+  query,
+  where,
+} from "firebase/firestore";
 import PrimaryButton from "../components/ui/PrimaryButton";
 import {
   DateTimePickerAndroid,
@@ -16,8 +23,24 @@ import {
 } from "@react-native-community/datetimepicker";
 
 const AdvertCreateFormScreen = ({ route, navigation }) => {
+  const [employerDetails, setEmployerDetails] = useState({});
+  const [loading, setLoading] = useState(false);
+
   console.log(route.params);
-  const { user } = route.params;
+  const user = route.params;
+
+  const dBCall = async () => {
+    setLoading(true);
+    const docRef = doc(db, "Employers", auth.currentUser.email);
+    const docSnap = await getDoc(docRef);
+    console.log(docSnap.data());
+    setEmployerDetails(docSnap.data());
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    dBCall();
+  }, []);
 
   const [date, setDate] = useState(new Date());
   const [mode, setMode] = useState("date");
@@ -30,7 +53,6 @@ const AdvertCreateFormScreen = ({ route, navigation }) => {
     setDate(currentDate);
   };
 
-  console.log(user);
   const [advert, setAdvert] = useState({
     hours: null,
     pay: null,
@@ -78,18 +100,13 @@ const AdvertCreateFormScreen = ({ route, navigation }) => {
     console.log("button hit");
     event.preventDefault();
     const timeDate = dateExtractor(date);
-    console.log(JSON.stringify(user.address));
-    console.log(auth.currentUser.email);
-    console.log(selected);
-    console.log(advert.hours);
-    console.log(timeDate);
-    console.log(advert.pay);
 
     try {
       const advertsDb = collection(db, "adverts");
       addDoc(advertsDb, {
-        location: user.address,
-        employer: auth.currentUser.email,
+        location: user.loaction,
+        address: employerDetails.address,
+        employer: employerDetails.businessName,
         type: selected,
         hours: advert.hours,
         time: { date: timeDate[0], startTimeime: timeDate[1] },
@@ -123,6 +140,7 @@ const AdvertCreateFormScreen = ({ route, navigation }) => {
         <SelectList
           setSelected={(val) => setSelected(val)}
           data={type}
+          value={type}
           save="value"
           label="Categories"
         />

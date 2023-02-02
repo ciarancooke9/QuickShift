@@ -11,24 +11,22 @@ import {
   query,
   where,
 } from "firebase/firestore";
-import { async } from "@firebase/util";
 
 const HomeScreen = ({ navigation }) => {
   const [user, setUser] = useState({});
   const [loading, setLoading] = useState(false);
 
   const dBCall = async () => {
+    setLoading(true);
     const docRef = doc(db, "users", auth.currentUser.uid);
     const docSnap = await getDoc(docRef);
-    console.log(docSnap.data());
+    console.log("homedocsnapdata", docSnap.data());
     setUser(docSnap.data());
+    setLoading(false);
   };
 
   useEffect(() => {
     dBCall();
-    /* user.isEmployer //redirect based on user type
-      ? navigation.replace("EmployeeHome", { user: user })
-      : navigation.replace("EmployerHome", { user: user }); */
   }, []);
 
   const renderItem = ({ item }) => {
@@ -42,11 +40,14 @@ const HomeScreen = ({ navigation }) => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      console.log(user.isEmployer);
       if (user.isEmployer) {
-        navigation.replace("EmployerHome");
+        navigation.replace("EmployerHome", {
+          userDetails: user,
+        });
       } else {
-        navigation.replace("EmployeeHome");
+        navigation.replace("EmployeeHome", {
+          userDetails: user,
+        });
       }
     } catch (error) {
       alert(error.message);

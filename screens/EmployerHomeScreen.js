@@ -13,16 +13,15 @@ const EmployerHomeScreen = ({ route, navigation }) => {
       alert(error.message);
     }
   };
-  console.log(route);
-  console.log(auth.currentUser.email);
   const { user } = route.params;
+  console.log("employerHome", user);
   return (
     <View>
       <PrimaryButton
         onPress={() =>
           navigation.navigate("AdvertCreateForm", {
             screen: "AdvertCreateFormScreen",
-            user: user,
+            userDetails: user,
           })
         }
       >
