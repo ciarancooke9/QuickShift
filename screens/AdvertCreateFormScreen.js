@@ -12,7 +12,7 @@ import {
   collection,
   addDoc,
   doc,
-  getDoc,
+  getDocs,
   query,
   where,
 } from "firebase/firestore";
@@ -26,15 +26,26 @@ const AdvertCreateFormScreen = ({ route, navigation }) => {
   const [employerDetails, setEmployerDetails] = useState({});
   const [loading, setLoading] = useState(false);
 
-  console.log(route.params);
-  const user = route.params;
+  const user = route.params.userDetails;
 
   const dBCall = async () => {
     setLoading(true);
-    const docRef = doc(db, "Employers", auth.currentUser.email);
-    const docSnap = await getDoc(docRef);
-    console.log(docSnap.data());
-    setEmployerDetails(docSnap.data());
+    const q = query(
+      collection(db, "Employers"),
+      where("email", "==", auth.currentUser.email)
+    );
+
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((doc) => {
+      // doc.data() is never undefined for query doc snapshots
+      /* console.log(doc.id, " => ", doc.data());
+      console.log(auth.currentUser.uid); */
+      setEmployerDetails(doc.data());
+    });
+    /* const docRef = doc(db, "Employers");
+    const docSnap = await getDocs(docRef);
+    console.log("advertFormDocSnap", docSnap.data());
+    setEmployerDetails(docSnap.data()); */
     setLoading(false);
   };
 
@@ -97,14 +108,19 @@ const AdvertCreateFormScreen = ({ route, navigation }) => {
   };
 
   const handleSubmit = async (event) => {
-    console.log("button hit");
     event.preventDefault();
     const timeDate = dateExtractor(date);
-
+    console.log(employerDetails.location);
+    console.log(employerDetails.address);
+    console.log(employerDetails.businessName);
+    console.log(selected);
+    console.log(advert.hours);
+    console.log(timeDate[0], timeDate[1]);
+    console.log(advert.pay);
     try {
       const advertsDb = collection(db, "adverts");
       addDoc(advertsDb, {
-        location: user.loaction,
+        location: employerDetails.location,
         address: employerDetails.address,
         employer: employerDetails.businessName,
         type: selected,

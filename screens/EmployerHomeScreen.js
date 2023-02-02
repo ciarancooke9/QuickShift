@@ -13,7 +13,8 @@ const EmployerHomeScreen = ({ route, navigation }) => {
       alert(error.message);
     }
   };
-  const { user } = route.params;
+  console.log("employerHome", route.params.userDetails);
+  const user = route.params.userDetails;
   console.log("employerHome", user);
   return (
     <View>
