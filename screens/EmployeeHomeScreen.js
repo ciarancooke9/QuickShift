@@ -1,12 +1,54 @@
-import { StyleSheet, Text, View } from "react-native";
-import React from "react";
-import { auth } from "../utils/firebaseUtils";
-import SignOutButton from "../components/ui/SignOutButton";
-const EmployeeHomeScreen = ({ navigation }) => {
+import { StyleSheet, View, ActivityIndicator } from "react-native";
+import React, { useState, useEffect } from "react";
+import { auth, db } from "../utils/firebaseUtils";
+
+import {
+  collection,
+  getDocs,
+  query,
+  where,
+  onSnapshot,
+} from "firebase/firestore";
+import PrimaryButton from "../components/ui/PrimaryButton";
+import AdvertsList from "../components/AdvertsList";
+const EmployeeHomeScreen = ({ navigation, routes }) => {
+  const [employeeDetails, setEmployeeDetails] = useState({});
+
+  const employeeDBCall = async () => {
+    const q = query(
+      collection(db, "Employees"),
+      where("email", "==", auth.currentUser.email)
+    );
+
+    const querySnapshot = await getDocs(q);
+
+    querySnapshot.forEach((doc) => {
+      // doc.data() is never undefined for query doc snapshots
+      //console.log(doc.id, " => ", doc.data());
+      setEmployeeDetails(doc.data());
+      console.log("employeedbcall", employeeDetails);
+    });
+  };
+
+  useEffect(() => {
+    employeeDBCall();
+  }, []);
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    try {
+      auth.signOut();
+      navigation.replace("Login");
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+
   return (
     <View>
-      <Text>{auth.currentUser.email}</Text>
-      <SignOutButton navigation={navigation} />
+      <AdvertsList employeeDetails={employeeDetails} />
+
+      <PrimaryButton onPress={handleSubmit}>Sign Out</PrimaryButton>
     </View>
   );
 };
