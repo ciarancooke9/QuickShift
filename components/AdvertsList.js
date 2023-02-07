@@ -14,28 +14,50 @@ import {
   where,
   onSnapshot,
 } from "firebase/firestore";
+import { useFocusEffect } from "@react-navigation/native";
 
 const AdvertsList = ({ employeeDetails }) => {
   const [adverts, setAdverts] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
   const [loading, setLoading] = useState(false);
-  console.log("advertslist", employeeDetails);
-  const advertDBCall = async () => {
-    console.log("advertdbcall", employeeDetails.experience);
+  //console.log("advertslist", employeeDetails);
 
-    const q = query(
-      collection(db, "adverts"),
-      where("type", "in", employeeDetails.experience)
-    );
+  useFocusEffect(
+    React.useCallback(() => {
+      setLoading(true);
 
-    const querySnapshot = await getDocs(q);
-    const queryResults = querySnapshot.docs.map((doc) => doc.data());
-    setAdverts(queryResults);
-  };
+      const fetchAdvert = async () => {
+        const q = query(
+          collection(db, "adverts"),
+          where("type", "in", employeeDetails.experience)
+        );
 
-  useEffect(() => {
-    advertDBCall();
-  }, []);
+        try {
+          onSnapshot(q, (snapshot) => {
+            let advertList = [];
+            snapshot.docs.map((doc) =>
+              advertList.push({ ...doc.data(), id: doc.id })
+            );
+            setAdverts(advertList);
+            setLoading(false);
+          });
+          /* const querySnapshot = await getDocs(q);
+          const queryResults = querySnapshot.docs.map((doc) => doc.data());
+          console.log("advertdbcall", queryResults);
+          setAdverts(queryResults);
+          setLoading(false); */
+        } catch (e) {
+          // Handle error
+        }
+      };
+
+      fetchAdvert();
+
+      return () => {
+        setLoading(false);
+      };
+    }, [employeeDetails])
+  );
 
   const renderItem = ({ item }) => {
     return (
