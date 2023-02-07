@@ -1,16 +1,9 @@
 import { StyleSheet, ActivityIndicator, View } from "react-native";
-import React, { useState } from "react";
+import { useState, useCallback } from "react";
 import { auth, db } from "../utils/firebaseUtils";
 import { useFocusEffect } from "@react-navigation/native";
 import { isEmpty } from "lodash";
-import {
-  collection,
-  doc,
-  onSnapshot,
-  getDoc,
-  query,
-  where,
-} from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 
 const HomeScreen = ({ navigation }) => {
   const [user, setUser] = useState({});
@@ -30,7 +23,7 @@ const HomeScreen = ({ navigation }) => {
   }, []); */
 
   useFocusEffect(
-    React.useCallback(() => {
+    useCallback(() => {
       setLoading(true);
 
       const fetchEmployee = async () => {

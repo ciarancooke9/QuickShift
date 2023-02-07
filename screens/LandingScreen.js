@@ -1,6 +1,4 @@
 import { StyleSheet, View } from "react-native";
-import React from "react";
-
 import { auth } from "../utils/firebaseUtils";
 import PrimaryButton from "../components/ui/PrimaryButton";
 

@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from "react-native";
 import PrimaryButton from "../components/ui/PrimaryButton";
-import React, { useState, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import { auth, db } from "../utils/firebaseUtils";
 import { collection, getDocs, query, where } from "firebase/firestore";
@@ -9,7 +9,7 @@ const EmployerHomeScreen = ({ routes, navigation }) => {
   const [employerDetails, setEmployerDetails] = useState({});
   const [loading, setLoading] = useState(false);
   useFocusEffect(
-    React.useCallback(() => {
+    useCallback(() => {
       setLoading(true);
 
       const fetchEmployer = async () => {

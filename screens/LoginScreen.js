@@ -6,7 +6,7 @@ import {
   View,
   Button,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import PrimaryButton from "../components/ui/PrimaryButton";
 import {
   signInAuthUserWithEmailAndPassword,
