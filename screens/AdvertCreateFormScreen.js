@@ -94,7 +94,7 @@ const AdvertCreateFormScreen = ({ route, navigation }) => {
         time: { date: timeDate[0], startTimeime: timeDate[1] },
         pay: advert.pay,
       });
-      navigation.replace("Home");
+      navigation.replace("EmployerHome");
     } catch (error) {
       if (error.code === "auth/email-already-in-use") {
         alert("Cannot create user, email already in use");
