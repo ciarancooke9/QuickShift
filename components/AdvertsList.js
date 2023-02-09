@@ -70,6 +70,8 @@ const AdvertsList = ({ employeeDetails }) => {
             <View style={{ padding: 6 }}>
               <Text>Address: {item.address}</Text>
               <Text>Pay: {item.pay}</Text>
+              <Text>Time: {item.time.startTimeime}</Text>
+              <Text>Date: {item.time.date}</Text>
             </View>
           )}
         </View>

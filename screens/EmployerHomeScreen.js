@@ -5,7 +5,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { auth, db } from "../utils/firebaseUtils";
 import { collection, getDocs, query, where } from "firebase/firestore";
 
-const EmployerHomeScreen = ({ routes, navigation }) => {
+const EmployerHomeScreen = ({ route, navigation }) => {
   const [employerDetails, setEmployerDetails] = useState({});
   const [loading, setLoading] = useState(false);
   useFocusEffect(
@@ -38,7 +38,7 @@ const EmployerHomeScreen = ({ routes, navigation }) => {
       return () => {
         setLoading(false);
       };
-    }, [routes])
+    }, [route])
   );
 
   const handleSubmit = async (event) => {
