@@ -1,6 +1,9 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, Alert } from "react-native";
+import { useEffect, useState } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import messaging from "@react-native-firebase/messaging";
+//import { PermissionsAndroid } from "react-native";
 import { auth } from "./utils/firebaseUtils";
 import LandingScreen from "./screens/LandingScreen";
 import HomeScreen from "./screens/HomeScreen";
@@ -15,12 +18,53 @@ import SignupScreen from "./screens/SignUpScreen";
 import ViewApplicantsScreen from "./screens/ViewApplicantsScreen";
 import ChatScreen from "./screens/ChatScreen";
 const Stack = createNativeStackNavigator();
+// Register background handler
 
 export default function App() {
-  const initialRouteName = auth.currentUser ? "Home" : "Landing";
+  const [loading, setLoading] = useState(true);
+  const [initialRoute, setInitialRoute] = useState("Landing");
+
+  useEffect(() => {
+    const unsubscribe = messaging().onMessage(async (remoteMessage) => {
+      Alert.alert("A new FCM message arrived!", JSON.stringify(remoteMessage));
+    });
+
+    messaging()
+      .getToken()
+      .then((token) => {
+        console.log("app fcm token", token);
+      });
+
+    messaging().onNotificationOpenedApp((remoteMessage) => {
+      console.log(
+        "Notification caused app to open from background state:",
+        remoteMessage.notification
+      );
+      //navigation.navigate(remoteMessage.data.type);
+    });
+
+    // Check whether an initial notification is available
+    messaging()
+      .getInitialNotification()
+      .then((remoteMessage) => {
+        if (remoteMessage) {
+          console.log(
+            "Notification caused app to open from quit state:",
+            remoteMessage.notification
+          );
+          //setInitialRoute(remoteMessage.data.type); // e.g. "Settings"
+        }
+        setLoading(false);
+      });
+
+    return unsubscribe;
+  }, []);
+  if (loading) {
+    return null;
+  }
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName={initialRouteName}>
+      <Stack.Navigator initialRoute={initialRoute}>
         <Stack.Screen name="Landing" component={LandingScreen} />
         <Stack.Screen name="SignUp" component={SignupScreen} />
         <Stack.Screen name="SignUpLanding" component={SignupLandingScreen} />
